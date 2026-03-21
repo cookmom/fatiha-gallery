@@ -25,12 +25,12 @@
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
       color: #ccc;
       display: flex;
-      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) env(safe-area-inset-left);
+      padding: 0 0 env(safe-area-inset-bottom, 0px) 0;
     }
 
     /* ── SIDEBAR ── */
     #sidebar-toggle {
-      position: fixed; top: 10px; left: 10px; z-index: 300;
+      position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); left: 10px; z-index: 300;
       background: #1e1d28cc; backdrop-filter: blur(8px);
       border: 1px solid #353450; border-radius: 7px;
       color: #aaa; font-size: 16px; padding: 5px 9px; cursor: pointer;
@@ -47,7 +47,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 8px 0 8px;
+      padding: calc(8px + env(safe-area-inset-top, 0px)) 0 8px;
       gap: 0;
       overflow-y: auto;
       overflow-x: hidden;
@@ -234,11 +234,14 @@
       .slider-row { padding: 0 4px; }
       .slider-row label { font-size: 8px; }
       .tool-btn { width: 40px; height: 28px; font-size: 13px; }
+      .tb-btn { font-size: 10px; padding: 4px 7px; }
+      #toolbar { gap: 3px; max-width: 60vw; }
     }
     @media (max-width: 375px) {
       #sidebar { width: 48px; }
       .brush-btn { width: 36px; height: 24px; font-size: 6px; }
       .color-swatch { width: 18px; height: 18px; }
+      .tb-btn { font-size: 9px; padding: 3px 5px; }
     }
     
     /* ── CANVAS CONTAINER ── */
@@ -255,11 +258,14 @@
     /* ── TOP TOOLBAR ── */
     #toolbar {
       position: fixed;
-      top: 10px;
-      right: 12px;
+      top: calc(10px + env(safe-area-inset-top, 0px));
+      right: 8px;
       display: flex;
-      gap: 5px;
+      gap: 4px;
       z-index: 200;
+      flex-wrap: wrap;
+      max-width: 50vw;
+      justify-content: flex-end;
     }
     .tb-btn {
       background: #1e1d28cc;
