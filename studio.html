@@ -208,6 +208,19 @@
     }
 
     #sidebar.hidden { transform: translateX(-100%); }
+    
+    /* Full canvas mode — hide everything */
+    body.fullcanvas #sidebar { transform: translateX(-100%); }
+    body.fullcanvas #toolbar { display: none; }
+    body.fullcanvas #layer-bar { display: none; }
+    body.fullcanvas #sidebar-toggle { display: none; }
+    body.fullcanvas #fullcanvas-exit {
+      display: block; position: fixed; bottom: 20px; right: 20px; z-index: 400;
+      background: #1e1d28aa; backdrop-filter: blur(6px); border: 1px solid #353450;
+      border-radius: 50%; width: 40px; height: 40px; color: #aaa; font-size: 18px;
+      cursor: pointer; line-height: 40px; text-align: center;
+    }
+    #fullcanvas-exit { display: none; }
     #sidebar.hidden ~ #canvas-container { margin-left: 0; }
     #layer-bar { left: var(--sidebar-w, 72px); transition: left 0.25s ease; }
     #sidebar.hidden ~ #layer-bar, .sidebar-hidden #layer-bar { left: 0; }
@@ -435,6 +448,9 @@
 </head>
 <body>
 
+<!-- ── FULLCANVAS EXIT ── -->
+<button id="fullcanvas-exit" onclick="toggleFullCanvas()">✕</button>
+
 <!-- ── SIDEBAR TOGGLE ── -->
 <button id="sidebar-toggle" class="open" onclick="toggleSidebar()">☰</button>
 
@@ -508,6 +524,7 @@
   <button class="tb-btn" id="btn-redo" onclick="doRedo()" disabled>↪ Redo</button>
   <button class="tb-btn" onclick="doExport()">↓ Export JSON</button>
   <button class="tb-btn" onclick="openImport()">↑ Import</button>
+  <button class="tb-btn" onclick="toggleFullCanvas()" title="Full Canvas (F)">⛶</button>
   <button class="tb-btn" onclick="doClear()" style="color:#cc8888">⊗ Clear</button>
 </div>
 
@@ -572,6 +589,28 @@ const PAPER_H = 1920;
 let SIDEBAR_W = window.innerWidth <= 375 ? 48 : window.innerWidth <= 430 ? 56 : 72;
 let sidebarVisible = true;
 document.documentElement.style.setProperty('--sidebar-w', SIDEBAR_W + 'px');
+
+let isFullCanvas = false;
+function toggleFullCanvas() {
+  isFullCanvas = !isFullCanvas;
+  document.body.classList.toggle('fullcanvas', isFullCanvas);
+  // Resize canvas to full screen
+  setTimeout(() => {
+    const cw = isFullCanvas ? windowWidth : (sidebarVisible ? windowWidth - SIDEBAR_W : windowWidth);
+    const ch = windowHeight;
+    resizeCanvas(cw, ch);
+    const availH = isFullCanvas ? ch : ch - LAYER_BAR_H;
+    vScale = Math.min(cw / PAPER_W, availH / PAPER_H) * 0.96;
+    vOffX = (cw - PAPER_W * vScale) / 2;
+    vOffY = (availH - PAPER_H * vScale) / 2;
+  }, 100);
+}
+
+// Keyboard: F for full canvas, Escape to exit
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'f' || e.key === 'F') { if (!e.target.matches('input,textarea')) toggleFullCanvas(); }
+  if (e.key === 'Escape' && isFullCanvas) toggleFullCanvas();
+});
 
 function toggleSidebar() {
   sidebarVisible = !sidebarVisible;
