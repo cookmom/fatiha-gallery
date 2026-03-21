@@ -737,8 +737,94 @@ function setup() {
     console.warn('brush.box() unavailable:', e);
   }
 
-  frameRate(30); // keep loop running for touch events
+  frameRate(30);
+  
+  // Raw canvas touch listeners (more reliable than p5's touchStarted/touchMoved on mobile)
+  const canvasEl = myCanvas.elt;
+  canvasEl.addEventListener('pointerdown', handlePointerDown, {passive: false});
+  canvasEl.addEventListener('pointermove', handlePointerMove, {passive: false});
+  canvasEl.addEventListener('pointerup', handlePointerUp, {passive: false});
+  canvasEl.addEventListener('pointercancel', handlePointerUp, {passive: false});
+  canvasEl.style.touchAction = 'none';
+  
   redraw();
+}
+
+function getPointerPaperPos(e) {
+  const rect = myCanvas.elt.getBoundingClientRect();
+  const sx = e.clientX - rect.left;
+  const sy = e.clientY - rect.top;
+  return screenToPaper(sx, sy);
+}
+
+function handlePointerDown(e) {
+  e.preventDefault();
+  const [px, py] = getPointerPaperPos(e);
+  
+  if (appState.tool === 'draw') {
+    if (!inPaper(px, py)) return;
+    isPointerDown = true;
+    currentStroke = {
+      id: makeId(),
+      brush: appState.brush,
+      color: appState.color,
+      weight: appState.weight,
+      opacity: appState.opacity,
+      layer: appState.layer,
+      points: [[px, py]],
+      transform: { translate: [0,0], scale: [1,1], rotate: 0 },
+      timestamp: Date.now(),
+      hidden: false,
+    };
+    lastPt = [px, py];
+  } else if (appState.tool === 'select') {
+    if (selectedId !== null) {
+      const handle = getGizmoHandle(px, py);
+      if (handle) {
+        transformHandle = handle;
+        selDragActive = true;
+        selDragStart = [px, py];
+        const sel = strokes.find(s => s.id === selectedId);
+        if (sel) selOrigTransform = JSON.parse(JSON.stringify(sel.transform));
+        return;
+      }
+    }
+    selectAt(px, py);
+  }
+}
+
+function handlePointerMove(e) {
+  e.preventDefault();
+  const [px, py] = getPointerPaperPos(e);
+  
+  if (appState.tool === 'draw' && isPointerDown && currentStroke) {
+    const last = lastPt || currentStroke.points[currentStroke.points.length - 1];
+    const dx = px - last[0], dy = py - last[1];
+    if (dx*dx + dy*dy > 1) {
+      currentStroke.points.push([px, py]);
+      lastPt = [px, py];
+    }
+  } else if (selDragActive && selectedId !== null) {
+    applyTransformDrag(px, py);
+  }
+}
+
+function handlePointerUp(e) {
+  e.preventDefault();
+  if (appState.tool === 'draw' && isPointerDown && currentStroke) {
+    if (currentStroke.points.length >= 2) {
+      saveUndoState();
+      strokes.push(currentStroke);
+      updateLayerCounts();
+    }
+    currentStroke = null;
+    isPointerDown = false;
+    lastPt = null;
+  }
+  if (selDragActive) {
+    selDragActive = false;
+    transformHandle = null;
+  }
 }
 
 function draw() {
@@ -804,9 +890,11 @@ function renderStroke(s) {
   const bname = BRUSH_NAMES.includes(s.brush) ? s.brush : 'HB';
 
   try {
-    brush.set(bname, colorStr, s.weight);
+    brush.set(bname, color(s.color), s.opacity);
+    brush.strokeWeight(s.weight);
   } catch(e) {
-    brush.set('HB', colorStr, s.weight);
+    brush.set('HB', color(s.color), s.opacity);
+    brush.strokeWeight(s.weight);
   }
 
   if (pts.length === 1) {
