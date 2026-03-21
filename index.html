@@ -81,13 +81,37 @@
     margin-top: 8px;
   }
   
-  /* Lightbox */
+  /* Lightbox / Annotation Mode */
   .lightbox {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-    z-index: 100; align-items: center; justify-content: center; cursor: pointer;
+    z-index: 100; flex-direction: column; align-items: center; justify-content: center;
   }
   .lightbox.open { display: flex; }
-  .lightbox img { max-width: 95vw; max-height: 95vh; object-fit: contain; }
+  .lightbox .annotate-container {
+    position: relative; max-width: 95vw; max-height: 85vh;
+  }
+  .lightbox img { max-width: 100%; max-height: 85vh; object-fit: contain; display: block; }
+  .lightbox canvas {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    cursor: crosshair;
+  }
+  .annotate-toolbar {
+    display: flex; gap: 8px; padding: 10px; align-items: center;
+  }
+  .annotate-toolbar button {
+    background: rgba(200,168,76,0.2); color: #c8a84c; border: 1px solid rgba(200,168,76,0.4);
+    padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px;
+  }
+  .annotate-toolbar button.active { background: rgba(200,168,76,0.5); }
+  .annotate-toolbar input[type="color"] {
+    width: 32px; height: 28px; border: none; cursor: pointer; border-radius: 4px;
+  }
+  .annotate-toolbar input[type="range"] { width: 80px; }
+  .annotate-toolbar .label { color: rgba(232,224,208,0.5); font-size: 11px; }
+  .annotate-toolbar input[type="text"] {
+    background: #1a1a22; border: 1px solid rgba(200,168,76,0.3); color: #e8e0d0;
+    padding: 4px 8px; border-radius: 4px; font-size: 12px; width: 200px;
+  }
   
   /* Auto score badge */
   .auto-score {
@@ -126,8 +150,25 @@
 
 <div id="gallery" class="gallery"></div>
 
-<div id="lightbox" class="lightbox" onclick="this.classList.remove('open')">
-  <img id="lightboxImg" src="">
+<div id="lightbox" class="lightbox">
+  <div class="annotate-toolbar">
+    <button onclick="setTool('draw')" id="toolDraw" class="active">✏️ Draw</button>
+    <button onclick="setTool('arrow')" id="toolArrow">➡️ Arrow</button>
+    <button onclick="setTool('text')" id="toolText">💬 Text</button>
+    <button onclick="setTool('circle')" id="toolCircle">⭕ Circle</button>
+    <input type="color" id="penColor" value="#ff3333" title="Color">
+    <span class="label">Size:</span>
+    <input type="range" id="penSize" min="2" max="12" value="4">
+    <input type="text" id="annotateText" placeholder="Type annotation text..." style="display:none">
+    <button onclick="undoAnnotation()">↩️ Undo</button>
+    <button onclick="clearAnnotations()">🗑️ Clear</button>
+    <button onclick="saveAnnotation()">💾 Save</button>
+    <button onclick="closeLightbox()" style="margin-left:auto;">✕ Close</button>
+  </div>
+  <div class="annotate-container">
+    <img id="lightboxImg" src="">
+    <canvas id="annotateCanvas"></canvas>
+  </div>
 </div>
 
 <script>
@@ -170,7 +211,7 @@ function renderGallery() {
   gallery.innerHTML = sorted.map((it, idx) => `
     <div class="card">
       <div style="position:relative">
-        <img src="${it.image}" alt="${it.title}" onclick="openLightbox('${it.image}')">
+        <img src="${it.image}" alt="${it.title}" onclick="openLightbox('${it.image}', '${it.id||idx}')">
         ${it.autoScore ? `<span class="auto-score">⚡${it.autoScore}</span>` : ''}
       </div>
       <div class="card-info">
@@ -212,9 +253,202 @@ function renderGallery() {
   `).join('');
 }
 
-function openLightbox(src) {
-  document.getElementById('lightboxImg').src = src;
+// ============================================================
+// ANNOTATION SYSTEM
+// ============================================================
+let currentTool = 'draw';
+let isDrawing = false;
+let drawHistory = [];
+let currentPath = [];
+let currentImageId = null;
+let startX, startY;
+
+function openLightbox(src, id) {
+  currentImageId = id;
+  const img = document.getElementById('lightboxImg');
+  img.src = src;
   document.getElementById('lightbox').classList.add('open');
+  
+  img.onload = () => {
+    const canvas = document.getElementById('annotateCanvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    
+    // Load existing annotations
+    const saved = JSON.parse(localStorage.getItem('annotations') || '{}');
+    if (saved[id]) {
+      const savedImg = new Image();
+      savedImg.onload = () => {
+        canvas.getContext('2d').drawImage(savedImg, 0, 0);
+      };
+      savedImg.src = saved[id];
+    }
+  };
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+function setTool(tool) {
+  currentTool = tool;
+  document.querySelectorAll('.annotate-toolbar button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tool' + tool.charAt(0).toUpperCase() + tool.slice(1)).classList.add('active');
+  document.getElementById('annotateText').style.display = tool === 'text' ? 'block' : 'none';
+}
+
+// Canvas drawing handlers
+document.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('annotateCanvas');
+  
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+  }
+  
+  function startDraw(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    isDrawing = true;
+    const pos = getPos(e);
+    startX = pos.x; startY = pos.y;
+    currentPath = [pos];
+    
+    if (currentTool === 'text') {
+      const text = document.getElementById('annotateText').value;
+      if (text) {
+        const ctx = canvas.getContext('2d');
+        ctx.font = 'bold 24px Georgia';
+        ctx.fillStyle = document.getElementById('penColor').value;
+        ctx.fillText(text, pos.x, pos.y);
+        drawHistory.push(canvas.toDataURL());
+      }
+      isDrawing = false;
+    }
+  }
+  
+  function moveDraw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    const ctx = canvas.getContext('2d');
+    const color = document.getElementById('penColor').value;
+    const size = parseInt(document.getElementById('penSize').value);
+    
+    if (currentTool === 'draw') {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = size;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      const prev = currentPath[currentPath.length - 1];
+      ctx.beginPath();
+      ctx.moveTo(prev.x, prev.y);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      currentPath.push(pos);
+    }
+  }
+  
+  function endDraw(e) {
+    if (!isDrawing) return;
+    isDrawing = false;
+    const ctx = canvas.getContext('2d');
+    const color = document.getElementById('penColor').value;
+    const size = parseInt(document.getElementById('penSize').value);
+    const pos = e.changedTouches ? 
+      { x: (e.changedTouches[0].clientX - canvas.getBoundingClientRect().left) * (canvas.width / canvas.getBoundingClientRect().width),
+        y: (e.changedTouches[0].clientY - canvas.getBoundingClientRect().top) * (canvas.height / canvas.getBoundingClientRect().height) } :
+      getPos(e);
+    
+    if (currentTool === 'arrow') {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = size;
+      ctx.lineCap = 'round';
+      // Shaft
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      // Arrowhead
+      const angle = Math.atan2(pos.y - startY, pos.x - startX);
+      const headLen = size * 5;
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      ctx.lineTo(pos.x - headLen * Math.cos(angle - 0.4), pos.y - headLen * Math.sin(angle - 0.4));
+      ctx.moveTo(pos.x, pos.y);
+      ctx.lineTo(pos.x - headLen * Math.cos(angle + 0.4), pos.y - headLen * Math.sin(angle + 0.4));
+      ctx.stroke();
+    }
+    
+    if (currentTool === 'circle') {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = size;
+      const rx = Math.abs(pos.x - startX);
+      const ry = Math.abs(pos.y - startY);
+      const cx = (startX + pos.x) / 2;
+      const cy = (startY + pos.y) / 2;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx/2, ry/2, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    
+    drawHistory.push(canvas.toDataURL());
+  }
+  
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', moveDraw);
+  canvas.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('touchstart', startDraw, {passive: false});
+  canvas.addEventListener('touchmove', moveDraw, {passive: false});
+  canvas.addEventListener('touchend', endDraw);
+});
+
+function undoAnnotation() {
+  drawHistory.pop();
+  const canvas = document.getElementById('annotateCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (drawHistory.length > 0) {
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img, 0, 0);
+    img.src = drawHistory[drawHistory.length - 1];
+  }
+}
+
+function clearAnnotations() {
+  const canvas = document.getElementById('annotateCanvas');
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+  drawHistory = [];
+}
+
+function saveAnnotation() {
+  const canvas = document.getElementById('annotateCanvas');
+  const dataUrl = canvas.toDataURL('image/png');
+  
+  // Save to localStorage
+  const annotations = JSON.parse(localStorage.getItem('annotations') || '{}');
+  annotations[currentImageId] = dataUrl;
+  localStorage.setItem('annotations', JSON.stringify(annotations));
+  
+  // Also save as downloadable image (composited)
+  const img = document.getElementById('lightboxImg');
+  const composite = document.createElement('canvas');
+  composite.width = img.naturalWidth;
+  composite.height = img.naturalHeight;
+  const ctx = composite.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  ctx.drawImage(canvas, 0, 0);
+  
+  const link = document.createElement('a');
+  link.download = (currentImageId || 'annotated') + '-feedback.png';
+  link.href = composite.toDataURL('image/png');
+  link.click();
+  
+  alert('Annotation saved! Downloaded as ' + link.download);
 }
 
 function rate(id, score) {
