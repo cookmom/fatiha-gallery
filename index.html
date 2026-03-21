@@ -96,7 +96,15 @@
     cursor: crosshair;
   }
   .annotate-toolbar {
-    display: flex; gap: 8px; padding: 10px; align-items: center;
+    display: flex; gap: 6px; padding: 8px 10px; align-items: center;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap;
+    order: 2; /* move below image on mobile */
+  }
+  @media (max-width: 768px) {
+    .lightbox { flex-direction: column; }
+    .annotate-toolbar { font-size: 11px; padding: 6px; gap: 4px; }
+    .annotate-toolbar button { padding: 5px 8px; font-size: 11px; }
+    .annotate-container { order: 1; }
   }
   .annotate-toolbar button {
     background: rgba(200,168,76,0.2); color: #c8a84c; border: 1px solid rgba(200,168,76,0.4);
@@ -151,6 +159,15 @@
   <h1>fatiha.app</h1>
   <p>Generative Islamic Art — Gallery & Feedback</p>
 </header>
+
+<!-- Sticky Progress Dashboard -->
+<div id="dashboard" style="position:sticky;top:0;z-index:50;background:#12121a;border-bottom:1px solid rgba(200,168,76,0.2);padding:10px 20px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;font-size:12px;">
+  <div>📊 <span style="color:#c8a84c;" id="iterCount">0</span> iterations</div>
+  <div>🎯 Surah: <span style="color:#c8a84c;">1/114 — Al-Fatiha</span></div>
+  <div>🔄 Loop: <span style="color:#4a8a5a;" id="loopStatus">idle</span></div>
+  <div>⭐ Avg rating: <span style="color:#c8a84c;" id="avgRating">—</span></div>
+  <div>💰 Tokens: <span style="color:#4a8a5a;">$0 (OAuth/local)</span></div>
+</div>
 
 <div class="filters">
   <select id="surahFilter">
@@ -207,6 +224,15 @@ async function loadIterations() {
   renderGallery();
   seedAgentNotes();
   renderAllThreads();
+  updateDashboard();
+}
+
+function updateDashboard() {
+  document.getElementById('iterCount').textContent = iterations.length;
+  const ratings = JSON.parse(localStorage.getItem('ratings') || '{}');
+  const scores = Object.values(ratings).filter(v => v > 0);
+  document.getElementById('avgRating').textContent = scores.length ? 
+    (scores.reduce((a,b) => a+b, 0) / scores.length).toFixed(1) + ' (' + scores.length + ' rated)' : '—';
 }
 
 function renderGallery() {
