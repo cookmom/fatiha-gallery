@@ -29,8 +29,18 @@
     }
 
     /* ── SIDEBAR ── */
+    #sidebar-toggle {
+      position: fixed; top: 10px; left: 10px; z-index: 300;
+      background: #1e1d28cc; backdrop-filter: blur(8px);
+      border: 1px solid #353450; border-radius: 7px;
+      color: #aaa; font-size: 16px; padding: 5px 9px; cursor: pointer;
+      transition: left 0.25s ease;
+    }
+    #sidebar-toggle.open { left: calc(var(--sidebar-w, 72px) + 6px); }
     #sidebar {
-      width: 72px;
+      width: var(--sidebar-w, 72px);
+      transform: translateX(0);
+      transition: transform 0.25s ease;
       height: 100vh;
       background: #1e1d28;
       border-right: 1px solid #2a2940;
@@ -197,6 +207,11 @@
       border: none;
     }
 
+    #sidebar.hidden { transform: translateX(-100%); }
+    #sidebar.hidden ~ #canvas-container { margin-left: 0; }
+    #layer-bar { left: var(--sidebar-w, 72px); transition: left 0.25s ease; }
+    #sidebar.hidden ~ #layer-bar, .sidebar-hidden #layer-bar { left: 0; }
+    
     /* ── MOBILE (< 430px) ── */
     @media (max-width: 430px) {
       #sidebar { width: 56px; }
@@ -420,6 +435,9 @@
 </head>
 <body>
 
+<!-- ── SIDEBAR TOGGLE ── -->
+<button id="sidebar-toggle" class="open" onclick="toggleSidebar()">☰</button>
+
 <!-- ── LEFT SIDEBAR ── -->
 <div id="sidebar">
 
@@ -551,7 +569,27 @@
 
 const PAPER_W = 1080;
 const PAPER_H = 1920;
-const SIDEBAR_W = window.innerWidth <= 375 ? 48 : window.innerWidth <= 430 ? 56 : 72;
+let SIDEBAR_W = window.innerWidth <= 375 ? 48 : window.innerWidth <= 430 ? 56 : 72;
+let sidebarVisible = true;
+document.documentElement.style.setProperty('--sidebar-w', SIDEBAR_W + 'px');
+
+function toggleSidebar() {
+  sidebarVisible = !sidebarVisible;
+  const sb = document.getElementById('sidebar');
+  const btn = document.getElementById('sidebar-toggle');
+  sb.classList.toggle('hidden', !sidebarVisible);
+  btn.classList.toggle('open', sidebarVisible);
+  document.body.classList.toggle('sidebar-hidden', !sidebarVisible);
+  // Resize canvas
+  setTimeout(() => {
+    const cw = sidebarVisible ? windowWidth - SIDEBAR_W : windowWidth;
+    resizeCanvas(cw, windowHeight);
+    const availH = windowHeight - LAYER_BAR_H;
+    vScale = Math.min(cw / PAPER_W, availH / PAPER_H) * 0.96;
+    vOffX = (cw - PAPER_W * vScale) / 2;
+    vOffY = (availH - PAPER_H * vScale) / 2;
+  }, 300);
+}
 const LAYER_BAR_H = 42;
 const LAYER_ORDER = ['watercolor', 'pencil', 'detail'];
 
