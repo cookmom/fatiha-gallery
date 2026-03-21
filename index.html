@@ -180,6 +180,13 @@ function renderGallery() {
         <div class="title">${it.title || 'Iteration ' + (idx+1)}</div>
         <div class="meta">${it.created || ''} · ${it.generator || 'Chris/Opus'}</div>
         
+        ${it.builderNotes ? `<div style="margin-top:8px;padding:8px;background:rgba(30,60,30,0.2);border-radius:6px;font-size:11px;">
+          <span style="color:#4a8a5a;">🔨 Builder:</span> ${it.builderNotes}
+        </div>` : ''}
+        ${it.criticNotes ? `<div style="margin-top:4px;padding:8px;background:rgba(60,30,30,0.2);border-radius:6px;font-size:11px;">
+          <span style="color:#c8684c;">👁 Critic:</span> ${it.criticNotes}
+        </div>` : ''}
+        
         <div class="rating" data-id="${it.id || idx}">
           ${[1,2,3,4,5].map(s => `
             <div class="star ${(it.humanScore||0) >= s ? 'active' : ''}" 

@@ -10,7 +10,9 @@
     "generator": "Chris/Opus",
     "created": "2026-03-20T18:07",
     "autoScore": null,
-    "humanScore": null
+    "humanScore": null,
+    "builderNotes": "Simple pencil door outline (2H) + 4 large watercolor washes. Lapis top-left, rose top-right, gold mid, terre verte bottom. fillBleed(0.6) for organic edges.",
+    "criticNotes": "Paper breathing nicely. Washes too transparent \u2014 need more color body. Door pencil weight is good."
   },
   {
     "id": "m2",
@@ -23,7 +25,9 @@
     "generator": "Chris/Opus",
     "created": "2026-03-20T18:08",
     "autoScore": null,
-    "humanScore": null
+    "humanScore": null,
+    "builderNotes": "Adjusted wash positions, slightly more overlap between colors.",
+    "criticNotes": "Better overlap but still too faded. Not enough contrast."
   },
   {
     "id": "m3",
@@ -36,7 +40,9 @@
     "generator": "Chris/Opus",
     "created": "2026-03-20T18:09",
     "autoScore": null,
-    "humanScore": 5
+    "humanScore": 5,
+    "builderNotes": "Refined door arch + diamond keystone. Balanced 4 washes with natural bleed. Minimal pencil \u2014 just enough to suggest the door.",
+    "criticNotes": "BEST SO FAR. Perfect balance of paper/paint. Pencil ghosts through. Colors are soft but present. This is the target quality."
   },
   {
     "id": "m4",
@@ -49,7 +55,9 @@
     "generator": "Chris/Opus",
     "created": "2026-03-20T18:12",
     "autoScore": null,
-    "humanScore": null
+    "humanScore": null,
+    "builderNotes": "Direction change: abstract gestural. Bold diagonal sweeps, horizontal drags. marker + 2B brushes. Edge-to-edge strokes ignoring the door.",
+    "criticNotes": "Bold energy but lost the door entirely. Too aggressive. The pencil whisper is buried."
   },
   {
     "id": "m5",
@@ -62,7 +70,9 @@
     "generator": "Chris/Opus",
     "created": "2026-03-20T18:13",
     "autoScore": null,
-    "humanScore": null
+    "humanScore": null,
+    "builderNotes": "Refined m4: stronger pencil door (#333, weight 3.0). 6 marker sweeps \u2014 diagonals, horizontals, verticals.",
+    "criticNotes": "Better balance than m4. Door ghosts through. But strokes too uniform \u2014 all same weight."
   },
   {
     "id": "m7",
@@ -75,7 +85,9 @@
     "generator": "Chris/Opus",
     "created": "2026-03-20T18:30",
     "autoScore": null,
-    "humanScore": null
+    "humanScore": null,
+    "builderNotes": "Back to m3 base. Added: crayon scribbles (terre verte, brown), small watercolor section fills, thin gold accent line.",
+    "criticNotes": "Right direction. Brown crayon marks look like bugs. Remove brown. Section fills are nice."
   },
   {
     "id": "m8",
@@ -88,7 +100,9 @@
     "generator": "Chris/Opus",
     "created": "2026-03-20T18:33",
     "autoScore": null,
-    "humanScore": 4
+    "humanScore": 4,
+    "builderNotes": "Fixed: replaced brown crayon with teal, lapis blue, gold marks. Same base as m7.",
+    "criticNotes": "Clean. No brown. Crayon marks match palette. Could use more color saturation on the washes."
   },
   {
     "id": "m9",
@@ -101,7 +115,9 @@
     "generator": "Chris/Opus",
     "created": "2026-03-20T18:37",
     "autoScore": null,
-    "humanScore": 2
+    "humanScore": 2,
+    "builderNotes": "Boosted all fill opacities to 150-240 range. Added more section fills. Rich saturated color.",
+    "criticNotes": "TOO MUCH. Drowned the pencil. Paper barely visible. Over-corrected from m8."
   },
   {
     "id": "m10",
@@ -114,7 +130,9 @@
     "generator": "Chris/Opus",
     "created": "2026-03-20T18:40",
     "autoScore": null,
-    "humanScore": 4
+    "humanScore": 4,
+    "builderNotes": "Dialed back to halfway between m8 and m9. Background washes at 60-90 opacity. 3-4 fills total. 30-40% bare paper target.",
+    "criticNotes": "Good balance. Green bottom-left slightly dominant. Pencil visible, paper breathing. Close to m3 quality with more color."
   },
   {
     "id": "m11",
@@ -127,6 +145,8 @@
     "generator": "Chris/Opus",
     "created": "2026-03-20T22:30",
     "autoScore": null,
-    "humanScore": null
+    "humanScore": null,
+    "builderNotes": "Added pressure variation: strokeWeight varies 0.3-2.5 on pencil, sinusoidal pressure on curves, random jitter per segment.",
+    "criticNotes": "Subtle improvement. Pressure variation visible but could be more dramatic. The thick-thin contrast needs to be bolder."
   }
 ]
