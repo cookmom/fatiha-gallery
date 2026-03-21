@@ -549,6 +549,18 @@ function setup() {
   c.parent('canvas-container');
   background(242, 234, 218);
   brush.load();
+
+  // Custom watercolor brush — wide, soft marker with low opacity for layering
+  brush.add('watercolor', {
+    type: 'marker',
+    weight: 25,
+    opacity: 30,
+    spacing: 3,
+    scatter: 2,
+    pressure: [0.3, 0.8, 0.3],
+    markerTip: true,
+  });
+
   pixelDensity(1);
   frameRate(60);
   computeViewport();
@@ -615,7 +627,7 @@ function draw() {
   }
 }
 
-// Watercolor: draw multiple offset passes for bleed effect
+// Draw a single segment between two points
 function drawBrushSegment(a, b) {
   const sx = vOffX + a.x * vScale;
   const sy = vOffY + a.y * vScale;
@@ -623,50 +635,22 @@ function drawBrushSegment(a, b) {
   const ey = vOffY + b.y * vScale;
 
   if (a.brush === 'watercolor') {
-    // Watercolor: wide soft strokes that bleed and flow
-    // Respects user's size and opacity sliders
+    // Watercolor: use our custom brush — wide, soft, layerable
     const userWeight = a.weight * vScale;
-    const userOpacity = a.opacity / 255;
-    const wcWeight = Math.max(userWeight * 3, 15); // wider than pencil but user-controlled
-    const wcOpacity = userOpacity * 0.15; // scaled down for layering
-    
-    // Core wet stroke — wide, soft
-    brush.set('marker', color(a.color), wcOpacity);
-    brush.strokeWeight(wcWeight);
+    const wcWeight = Math.max(userWeight * 3, 15);
+
+    // Core wet stroke via custom watercolor brush
+    brush.set('watercolor', a.color, wcWeight);
     brush.line(sx, sy, ex, ey);
     brushLineCount++;
-    
-    // Bleed layer — even wider, very transparent, offset
-    const bleedW = wcWeight * 1.8;
-    brush.set('spray', color(a.color), wcOpacity * 0.4);
-    brush.strokeWeight(bleedW);
+
+    // Soft bleed halo — wider, spray brush
+    brush.set('spray', a.color, wcWeight * 1.5);
     brush.line(sx, sy, ex, ey);
     brushLineCount++;
-    
-    // Edge darkening — thin line at the stroke boundary (watercolor edge effect)
-    brush.set('pen', color(a.color), wcOpacity * 0.8);
-    brush.strokeWeight(Math.max(userWeight * 0.3, 1));
-    const nx = -(ey - sy), ny = ex - sx;
-    const len = Math.sqrt(nx*nx + ny*ny) || 1;
-    const offX = (nx/len) * wcWeight * 0.4;
-    const offY = (ny/len) * wcWeight * 0.4;
-    brush.line(sx + offX, sy + offY, ex + offX, ey + offY);
-    brush.line(sx - offX, sy - offY, ex - offX, ey - offY);
-    brushLineCount += 2;
-    
-    // Pigment pooling — random dots along the stroke (heavier color at random spots)
-    if (Math.random() < 0.3) {
-      const t = Math.random();
-      const px = sx + (ex-sx)*t + (Math.random()-0.5)*wcWeight*0.5;
-      const py = sy + (ey-sy)*t + (Math.random()-0.5)*wcWeight*0.5;
-      brush.set('marker', color(a.color), wcOpacity * 2);
-      brush.strokeWeight(wcWeight * 0.4);
-      brush.line(px, py, px + 1, py + 1);
-      brushLineCount++;
-    }
   } else {
-    brush.set(a.brush, color(a.color), a.opacity / 255);
-    brush.strokeWeight(a.weight * vScale);
+    // All other brushes — hex string color, weight as 3rd param
+    brush.set(a.brush, a.color, a.weight * vScale);
     brush.line(sx, sy, ex, ey);
     brushLineCount++;
   }
@@ -702,12 +686,12 @@ function replayStroke(s) {
     if (s.brush === 'watercolor') {
       // Replay watercolor using same algorithm as live drawing
       drawBrushSegment(
-        {x: a[0], y: a[1], brush: 'watercolor', color: s.color, weight: w, opacity: s.opacity},
+        {x: a[0], y: a[1], brush: 'watercolor', color: s.color, weight: w},
         {x: b[0], y: b[1]}
       );
     } else {
-      brush.set(s.brush, color(s.color), s.opacity / 255);
-      brush.strokeWeight(w * vScale);
+      // Hex string color, weight as 3rd param
+      brush.set(s.brush, s.color, w * vScale);
       brush.line(sx, sy, ex, ey);
       brushLineCount++;
     }
