@@ -478,19 +478,19 @@ let vScale = 1, vOffX = 0, vOffY = 0;
 // ── App state ──
 window.state = {
   tool: 'draw',
-  brush: 'HB',
-  color: '#1a1a1a',
-  weight: 3,
+  brush: 'watercolor',
+  color: '#2a7a3a',
+  weight: 8,
   opacity: 255,
   layer: 'detail',
 };
 
-let strokes = [];
+window.strokes = [];
 let undoStack = []; // alias for strokes (they're the same)
-let redoStack = [];
+window.redoStack = [];
 let pendingPoints = [];
 let isDrawing = false;
-let needsFullRedraw = true;
+window.needsFullRedraw = true;
 let currentStrokeId = 0;
 let brushLineCount = 0;
 const BUFFER_LIMIT = 20000;
@@ -621,7 +621,9 @@ function draw() {
   if (pendingWatercolorRender) {
     const s = pendingWatercolorRender;
     pendingWatercolorRender = null;
-    renderWatercolorPolygon(s.points, s.color, s.weight, s.opacity);
+    // Full redraw clears preview dots then replays all strokes (including this one) as proper polygons
+    needsFullRedraw = true;
+    return;
   }
 
   // Draw only pending segments
