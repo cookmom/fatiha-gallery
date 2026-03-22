@@ -646,30 +646,33 @@ function drawBrushSegment(a, b) {
   const ey = vOffY + b.y * vScale;
 
   if (a.brush === 'watercolor') {
-    // Pick the watercolor variant closest to user's opacity setting
-    const userOp = a.opacity || 128;
-    const opLevels = [10, 20, 40, 60, 80, 120, 160, 200, 240];
-    let best = 60;
-    let bestDist = 999;
-    for (const op of opLevels) {
-      const d = Math.abs(op - userOp);
-      if (d < bestDist) { bestDist = d; best = op; }
-    }
-    const wcBrush = 'wc_' + best;
-    
-    // User's size slider controls the weight directly
+    // REAL watercolor: convert stroke segment into a filled polygon with bleed
     const userWeight = a.weight * vScale;
-    const wcWeight = Math.max(userWeight * 2, 8);
-
-    // Core wet stroke
-    brush.set(wcBrush, a.color, wcWeight);
-    brush.line(sx, sy, ex, ey);
-    brushLineCount++;
-
-    // Soft bleed halo
-    brush.set('spray', a.color, wcWeight * 1.3);
-    brush.line(sx, sy, ex, ey);
-    brushLineCount++;
+    const halfW = Math.max(userWeight * 1.5, 10);
+    const userOp = (a.opacity || 128);
+    
+    // Compute perpendicular offset for stroke width
+    const dx = ex - sx, dy = ey - sy;
+    const len = Math.sqrt(dx*dx + dy*dy) || 1;
+    const nx = -dy / len * halfW;
+    const ny = dx / len * halfW;
+    
+    // Build a quad polygon from the stroke segment
+    const poly = [
+      [sx + nx, sy + ny],
+      [ex + nx, ey + ny],
+      [ex - nx, ey - ny],
+      [sx - nx, sy - ny]
+    ];
+    
+    // Apply watercolor fill with bleed
+    brush.noStroke();
+    brush.fill(a.color, Math.round(userOp * 0.4));
+    brush.fillBleed(userWeight * 0.02, "out");
+    brush.fillTexture(0.4, 0.2);
+    brush.polygon(poly);
+    brush.noFill();
+    brushLineCount += 2;
   } else {
     // All other brushes — hex string color, weight as 3rd param
     brush.set(a.brush, a.color, a.weight * vScale);
