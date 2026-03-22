@@ -496,6 +496,7 @@ let brushLineCount = 0;
 const BUFFER_LIMIT = 20000;
 let flattenedBg = null; // saved canvas snapshot for buffer recycling
 let wcPreviewPoints = []; // watercolor preview stroke points
+let pendingWatercolorRender = null; // stroke to render in next draw() call
 
 // ── Layers ──
 const layers = [
@@ -614,6 +615,13 @@ function draw() {
     needsFullRedraw = false;
     pendingPoints = [];
     return;
+  }
+
+  // Render pending watercolor polygon inside draw()'s transform context
+  if (pendingWatercolorRender) {
+    const s = pendingWatercolorRender;
+    pendingWatercolorRender = null;
+    renderWatercolorPolygon(s.points, s.color, s.weight, s.opacity);
   }
 
   // Draw only pending segments
@@ -756,14 +764,10 @@ function onPointerUp(e) {
   isDrawing = false;
   pendingPoints = [];
 
-  // Watercolor: render the polygon fill directly (no full redraw)
+  // Watercolor: queue for rendering inside draw()'s transform context
   const current = strokes[strokes.length - 1];
   if (current && current.brush === 'watercolor' && current.points.length >= 2) {
-    // Render just this one watercolor stroke
-    push();
-    translate(-width/2, -height/2);
-    renderWatercolorPolygon(current.points, current.color, current.weight, current.opacity);
-    pop();
+    pendingWatercolorRender = current;
     // Don't set needsFullRedraw — existing canvas is untouched
   }
 }
