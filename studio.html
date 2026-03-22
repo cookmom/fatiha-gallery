@@ -756,10 +756,15 @@ function onPointerUp(e) {
   isDrawing = false;
   pendingPoints = [];
 
-  // Watercolor: convert stroke to filled polygon on release, then full redraw to clear preview
+  // Watercolor: render the polygon fill directly (no full redraw)
   const current = strokes[strokes.length - 1];
   if (current && current.brush === 'watercolor' && current.points.length >= 2) {
-    needsFullRedraw = true; // clear preview dots, replay as polygon fill
+    // Render just this one watercolor stroke
+    push();
+    translate(-width/2, -height/2);
+    renderWatercolorPolygon(current.points, current.color, current.weight, current.opacity);
+    pop();
+    // Don't set needsFullRedraw — existing canvas is untouched
   }
 }
 
