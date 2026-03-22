@@ -646,33 +646,27 @@ function drawBrushSegment(a, b) {
   const ey = vOffY + b.y * vScale;
 
   if (a.brush === 'watercolor') {
-    // REAL watercolor: convert stroke segment into a filled polygon with bleed
+    // Watercolor: multiple overlapping soft spray passes
+    // Size slider = spread width, Opacity slider = color density
     const userWeight = a.weight * vScale;
-    const halfW = Math.max(userWeight * 1.5, 10);
-    const userOp = (a.opacity || 128);
+    const userOp = (a.opacity || 128) / 255;
+    const spread = Math.max(userWeight * 3, 20);
     
-    // Compute perpendicular offset for stroke width
-    const dx = ex - sx, dy = ey - sy;
-    const len = Math.sqrt(dx*dx + dy*dy) || 1;
-    const nx = -dy / len * halfW;
-    const ny = dx / len * halfW;
+    // Watercolor = layered markers at decreasing size + increasing transparency
+    // Outermost: wide, very transparent (the bleed edge)
+    brush.set('marker', a.color, spread * 1.0);
+    brush.line(sx, sy, ex, ey);
+    brushLineCount++;
     
-    // Build a quad polygon from the stroke segment
-    const poly = [
-      [sx + nx, sy + ny],
-      [ex + nx, ey + ny],
-      [ex - nx, ey - ny],
-      [sx - nx, sy - ny]
-    ];
+    // Middle: medium width
+    brush.set('marker', a.color, spread * 0.65);
+    brush.line(sx, sy, ex, ey);
+    brushLineCount++;
     
-    // Apply watercolor fill with bleed
-    brush.noStroke();
-    brush.fill(a.color, Math.round(userOp * 0.4));
-    brush.fillBleed(userWeight * 0.02, "out");
-    brush.fillTexture(0.4, 0.2);
-    brush.polygon(poly);
-    brush.noFill();
-    brushLineCount += 2;
+    // Core: narrower, more opaque
+    brush.set('marker', a.color, spread * 0.35);
+    brush.line(sx, sy, ex, ey);
+    brushLineCount++;
   } else {
     // All other brushes — hex string color, weight as 3rd param
     brush.set(a.brush, a.color, a.weight * vScale);
