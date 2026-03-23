@@ -681,5 +681,18 @@
     "created": "2026-03-23T14:40",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "mihrab-chef",
+    "title": "mihrab chef",
+    "image": "images/renders/mihrab-chef.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "mihrab-chef",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T16:10",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
