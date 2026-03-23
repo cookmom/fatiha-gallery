@@ -551,5 +551,18 @@
     "created": "2026-03-23T07:39",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "wreath-packed-v2",
+    "title": "wreath packed v2",
+    "image": "images/renders/wreath-packed-v2.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "wreath-packed-v2",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T09:54",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
