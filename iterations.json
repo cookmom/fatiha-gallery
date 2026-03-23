@@ -200,5 +200,18 @@
     "created": "2026-03-22T22:05",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "step5-vine-f160",
+    "title": "Step5 Vine F160",
+    "image": "images/renders/step5-vine-f160.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "vine",
+    "generator": "Devon/Opus",
+    "created": "2026-03-22T22:00",
+    "builderNotes": "Step-by-step vine growth checkpoint",
+    "criticNotes": ""
   }
 ]
