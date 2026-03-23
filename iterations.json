@@ -603,5 +603,18 @@
     "created": "2026-03-23T10:23",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "wreath-context-v2",
+    "title": "wreath context v2",
+    "image": "images/renders/wreath-context-v2.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "wreath-context-v2",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T11:00",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
