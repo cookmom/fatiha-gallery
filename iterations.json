@@ -642,5 +642,18 @@
     "created": "2026-03-23T13:56",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "mihrab-v1",
+    "title": "mihrab v1",
+    "image": "images/renders/mihrab-v1.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "mihrab-v1",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T14:14",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
