@@ -148,5 +148,44 @@
     "humanScore": null,
     "builderNotes": "Added pressure variation: strokeWeight varies 0.3-2.5 on pencil, sinusoidal pressure on curves, random jitter per segment.",
     "criticNotes": "Subtle improvement. Pressure variation visible but could be more dramatic. The thick-thin contrast needs to be bolder."
+  },
+  {
+    "id": "vine-s1",
+    "title": "Step 1: First Wash",
+    "image": "images/checkpoints/step1-first-wash.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "vine-1",
+    "generator": "Devon/Opus",
+    "created": "2026-03-22T21:44",
+    "builderNotes": "Blank cream \u2192 one lapis wash drops in at frame 10",
+    "criticNotes": "Single wash on cream paper. Element-by-element placement working."
+  },
+  {
+    "id": "vine-s3",
+    "title": "Step 3: Washes + Pencil",
+    "image": "images/checkpoints/step3-washes-pencil.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "vine-3",
+    "generator": "Devon/Opus",
+    "created": "2026-03-22T21:44",
+    "builderNotes": "Multiple washes + pencil door lines simultaneous",
+    "criticNotes": "Washes and pencil appearing together from early frames."
+  },
+  {
+    "id": "vine-s4",
+    "title": "Step 4: Vine Growing",
+    "image": "images/checkpoints/step4-vine-growing.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "vine-4",
+    "generator": "Devon/Opus",
+    "created": "2026-03-22T21:44",
+    "builderNotes": "Vine starts from bottom center, splitting Y, first leaves + flower bud",
+    "criticNotes": "GROWTH PATH WORKING. Vine visible climbing from bottom."
   }
 ]
