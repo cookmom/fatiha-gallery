@@ -382,5 +382,18 @@
     "created": "2026-03-23T00:57",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "vine-lookdev-v10",
+    "title": "vine lookdev v10",
+    "image": "images/renders/vine-lookdev-v10.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "vine-lookdev-v10",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T00:59",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
