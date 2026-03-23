@@ -187,5 +187,18 @@
     "created": "2026-03-22T21:44",
     "builderNotes": "Vine starts from bottom center, splitting Y, first leaves + flower bud",
     "criticNotes": "GROWTH PATH WORKING. Vine visible climbing from bottom."
+  },
+  {
+    "id": "step5-vine-split",
+    "title": "step5 vine split",
+    "image": "images/renders/step5-vine-split.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "step5-vine-split",
+    "generator": "Devon/Opus",
+    "created": "2026-03-22T22:05",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
