@@ -421,5 +421,18 @@
     "created": "2026-03-23T06:40",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "flower-final-v1",
+    "title": "flower final v1",
+    "image": "images/renders/flower-final-v1.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "flower-final-v1",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T07:04",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
