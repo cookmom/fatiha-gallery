@@ -707,5 +707,18 @@
     "created": "2026-03-23T16:36",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "mihrab-outer-dome",
+    "title": "mihrab outer dome",
+    "image": "images/renders/mihrab-outer-dome.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "mihrab-outer-dome",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T17:27",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
