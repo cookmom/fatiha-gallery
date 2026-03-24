@@ -798,5 +798,18 @@
     "created": "2026-03-23T18:18",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "mihrab-no-frame",
+    "title": "mihrab no frame",
+    "image": "images/renders/mihrab-no-frame.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "mihrab-no-frame",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T20:10",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
