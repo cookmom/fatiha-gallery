@@ -837,5 +837,18 @@
     "created": "2026-03-23T20:20",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "mihrab-multi-fill",
+    "title": "mihrab multi fill",
+    "image": "images/renders/mihrab-multi-fill.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "mihrab-multi-fill",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T20:25",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
