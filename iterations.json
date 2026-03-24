@@ -811,5 +811,18 @@
     "created": "2026-03-23T20:10",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "mihrab-no-spandrels",
+    "title": "mihrab no spandrels",
+    "image": "images/renders/mihrab-no-spandrels.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "mihrab-no-spandrels",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T20:15",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
