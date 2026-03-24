@@ -850,5 +850,18 @@
     "created": "2026-03-23T20:25",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "mihrab-no-bleed",
+    "title": "mihrab no bleed",
+    "image": "images/renders/mihrab-no-bleed.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "mihrab-no-bleed",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T20:37",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
