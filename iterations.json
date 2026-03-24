@@ -733,5 +733,18 @@
     "created": "2026-03-23T17:33",
     "builderNotes": "Auto-synced from renders folder",
     "criticNotes": ""
+  },
+  {
+    "id": "mihrab-star-on-top",
+    "title": "mihrab star on top",
+    "image": "images/renders/mihrab-star-on-top.png",
+    "surah": 1,
+    "surahName": "Al-Fatiha",
+    "verse": "Bismillah",
+    "version": "mihrab-star-on-top",
+    "generator": "Devon/Opus",
+    "created": "2026-03-23T17:57",
+    "builderNotes": "Auto-synced from renders folder",
+    "criticNotes": ""
   }
 ]
